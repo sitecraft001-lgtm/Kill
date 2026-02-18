@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Exam Countdown</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -8,9 +9,58 @@
 <div class="header">📅 Exam Countdown</div>
 
 <div class="page">
-<input type="date" class="input">
-<button class="btn">Save Exam</button>
+  <input id="examName" class="input" placeholder="Exam name (e.g. Maths)">
+  <input id="examDate" type="date" class="input">
+  <button class="btn" onclick="addExam()">Save Exam</button>
+
+  <div id="list" style="margin-top:20px"></div>
 </div>
+
+<script>
+let exams = JSON.parse(localStorage.getItem("exams") || "[]");
+
+function render(){
+  list.innerHTML = "";
+  exams.forEach((e,i)=>{
+    let days = Math.ceil(
+      (new Date(e.date) - new Date()) / (1000*60*60*24)
+    );
+
+    list.innerHTML += `
+      <div class="card" style="margin-top:10px">
+        <div class="title">${e.name}</div>
+        <div class="sub">${days} days left</div>
+        <button onclick="removeExam(${i})" class="btn" 
+        style="margin-top:10px;background:#ff4d4d">Delete</button>
+      </div>
+    `;
+  });
+}
+
+function addExam(){
+  let name = examName.value.trim();
+  let date = examDate.value;
+
+  if(!name || !date){
+    alert("Enter exam name & date");
+    return;
+  }
+
+  exams.push({name,date});
+  localStorage.setItem("exams",JSON.stringify(exams));
+  examName.value="";
+  examDate.value="";
+  render();
+}
+
+function removeExam(i){
+  exams.splice(i,1);
+  localStorage.setItem("exams",JSON.stringify(exams));
+  render();
+}
+
+render();
+</script>
 
 </body>
 </html>
